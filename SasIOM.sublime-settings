@@ -1,0 +1,8 @@
+{
+	// Use the SAS Integration Technologies Configuration Utility to create a set of XML files that contain your server and user information
+	"serverinfo_xml": "C:/Users/USERNAME/AppData/Roaming/SAS/MetadataServer/oms_serverinfo2.xml",
+	"userinfo_xml":   "C:/Users/USERNAME/AppData/Roaming/SAS/MetadataServer/oms_userinfo2.xml"
+
+	// SAS Server Logical Name to connect to when submitting a process
+	"server_logical_name": "SASApp - Logical Workspace Server"
+}
