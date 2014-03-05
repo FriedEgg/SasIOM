@@ -6,6 +6,14 @@ fileTypes: [sas]
 uuid: ce8e98ae-85f0-4f55-9af8-b2a364eb9fc9
 
 repository:
+  operator:
+    patterns:
+      - match: ([\+\-\*\^\/])
+        name: keyword.operator.arithmetic.language_of_sas
+      - match: \b(?i:(eq|ne|gt|lt|ge|le|in|not|&|and|or|min|max))[\b]
+        name: keyword.operator.comparison.language_of_sas
+      - match: (=|^=|¬=|~=|>|<|>=|<=|[<>]{0,1}=:|\||!|¦|¬|^|~|<>|><|\|\|)
+        name: keyword.operator.language_of_sas
   byline:
     begin: ([bB][yY])
     beginCaptures:
@@ -15,6 +23,7 @@ repository:
       '1': {name: entity.name.class.language_of_sas}
     name: meta.language_of_sas
     patterns:
+      - include: '#blockcomment'
       - match: (?i:(descending|notsorted))
         name: entity.name.function.language_of_sas
   fileref:
@@ -24,12 +33,18 @@ repository:
       '2': {name: constant.character.language_of_sas}
   quote:
     patterns:
-      - match: \'[^\']*\'(?=[^ndt])
+      - match: \'[^\']*\'(?![ndt])
         name: string.quoted.single.language_of_sas
-      - match: \"[^\"]*\"(?=[^ndt])
+      - match: \"[^\"]*\"(?![ndt])
         name: string.quoted.double.language_of_sas
-      - match: ([\"\']\d{1,2}(?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))\d{2,4}[\"\']d[^t])
+  constant:
+    patterns:
+      - match: (\b\d+)(?![&a-zA-Z])
+        name: constant.numeric.language_of_sas
+      - match: ([\"\']\d{1,2}(?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))\d{2,4}[\"\'][dD])
         name: constant.numeric.date.language_of_sas
+      - match: ([\"\'][^\"\']*[\"\'][nN])
+        name: variable.language.language_of_sas
   blockcomment:
     begin: \/\*
     end: \*\/
@@ -51,6 +66,10 @@ repository:
     endCaptures:
       '1': {name: entity.name.class.language_of_sas}
     name: meta.language_of_sas
+    patterns:
+      - include: '#blockcomment'
+      - include: '#operator'
+      - include: '#constant'
   title:
     begin: ((?i:(title|footnote))[0-9]{0,2})
     beginCaptures:
@@ -60,13 +79,19 @@ repository:
       '1': {name: entity.name.class.language_of_sas}
     patterns:
       - include: '#quote'
+      - include: '#blockcomment'
 
 patterns:
 - include: '#comment'
+- include: '#quote'
+- include: '#operator'
+- include: '#constant'
 - comment: CATNAME Statement
-  begin: (?i:(catname))
+  begin: (?i:((catname)\s+(\w+)))
+  beginCaptures:
+    '2': {name: entity.name.class.language_of_sas}
   end: (;)
-  name: entity.name.class.language_of_sas
+  name: meta.language_of_sas
   patterns:
     - include: '#blockcomment'
     - include: '#quote'
@@ -76,9 +101,8 @@ patterns:
       name: entity.name.function.language_of_sas
       captures:
         '3': {name: keyword.operator.language_of_sas}
-    - include: '#fileref'
 - comment: PROC FREQ Statement
-  begin: (?i:(proc))\s+
+  begin: (?i:(proc))\s+(?=(?i:freq))
   beginCaptures:
     '1': {name: entity.name.class.language_of_sas}
   end: (?i:((run|quit)\s*;))
@@ -98,13 +122,13 @@ patterns:
         '1': {name: entity.name.class.language_of_sas}
       name: meta.language_of_sas
       patterns:
+        - include: '#blockcomment'
         - match: (?i:(compress|nlevels|noprint|page))
           name: entity.name.function.language_of_sas
-        - match: (?i:(data|formchar|order))(\s*=\s*)(\w+)
+        - match: (?i:(data|formchar|order))(\s*=\s*)
           captures:
             '1': {name: entity.name.function.language_of_sas}
             '2': {name: keyword.operator.language_of_sas}
-            '3': {name: markup.raw}
           name: meta.language_of_sas
     - begin: (?i:(exact))
       beginCaptures:
@@ -117,7 +141,7 @@ patterns:
           match: (?i:(agree|barnard|binomial|bin|chisq|comor|eqor|zelen|fisher|jt|kappa|kentb|taub|lrchi|mcnem|measures|mhchi|or|oddsratio|pchi|pcorr|relrisk|riskdiff|scorr|smdcr|smdrc|stutc|tauc|trend|wtkap(pa){0,1}))
           name: entity.name.function.language_of_sas
         - comment: Computation Options
-          match: \/(?i:((\s*((alpha|maxtime|n|pformat|seed)\s*=\s*\w+)|mc|midp|point)))+
+          match: \/(?i:((\s*((alpha|maxtime|n|pformat|seed)\s*=\s*)|mc|midp|point)))+
           name: entity.name.function.language_of_sas
     - begin: (?i:(output))
       beginCaptures:
@@ -126,12 +150,12 @@ patterns:
       endCaptures:
         '1': {name: entity.name.class.language_of_sas}
       patterns:
-        - match: (?i:(out))(\s*=\s*)([%&\w]+)
+        - include: '#blockcomment'
+        - match: (?i:(out))(\s*=\s*)
           name: meta.language_of_sas
           captures:
             '1': {name: entity.name.function.language_of_sas}
             '2': {name: keyword.operator.language_of_sas}
-            '3': {name: markup.raw}
         - match: (?i:(agree|ajchi|all|bdchi|binomial|bin|chisq|cmh|cmh1|cmh2|cmhcor|cmhga|cmhrms|cochq|contgy|cramv|eqkap|eqor|zelen|eqwkp|fisher|gamma|gs|gailsimon|jt|kappa|kentb|taub|lamcr|lamdas|lamrc|lgor|lgrrc1|lgrrc2|lrchi|mcnem|measures|mhchi|mhor|comor|mhrrc1|mhrrc2|n|nmiss|or|oddsratio|pchi|plcorr|rdif1|rdif2|relrisk|riskdiff(1|2)?|rrc(1|2)|relrisk(1|2)|rsk(1|11|12|2|21|22)|scorr|smdcr|smdrc|stutc|tauc|trend|tsymm|bowker|u|ucr|urc|wtkap(pa)?))
           name: entity.name.function.language_of_sas
     - begin: (?i:(tables))
@@ -141,9 +165,10 @@ patterns:
       endCaptures:
         '1': {name: entity.name.class.language_of_sas}
       patterns:
+        - include: '#blockcomment'
         - match: ([\*\(\)]|-|--|_all_|_character_|_numeric)
           name: keyword.operator.language_of_sas
-        - match: (\/)
+        - match: (\/)(?!\*)
           name: keyword.operator.language_of_sas
         - match: (?i:(agree|all|binomial|bin|chisq|cl|cmh(1|2)?|fisher|gailsimon|jt|measures|missing|plcorr|relrisk|riskdiff|trend|cellchi2|cumcol|deviation|expected|missprint|peasonres|printkwts|scorout|sparse|stdres|totpct|crosslist|list|maxlevels|nocol|nocum|nofreq|nopercent|noprint|norow|nosparse|nowarn|outcum|outexpect|outpct))
           name: entity.name.function.language_of_sas
@@ -169,6 +194,6 @@ patterns:
         '1': {name: entity.name.class.language_of_sas}
       name: meta.language_of_sas
       patterns:
+        - include: '#blockcomment'
         - match: (\/\s*(?i:(zeros)))
-
           name: entity.name.function.language_of_sas
