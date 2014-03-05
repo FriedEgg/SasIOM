@@ -44,11 +44,11 @@ class SasIOMResults:
       else:
         status += 'DONE'
     view.set_status( 'SasIOM', "%s" % ( status ) )
-    self.output_view = sublime.active_window().get_output_panel("saslist")    
+    self.output_view = view.window().get_output_panel("saslist")    
     self.output_view.set_read_only(False)
     self.output_view.run_command('append', {'characters': ''.join( Pref.lst )})
     self.output_view.set_read_only(True)
-    sublime.active_window().run_command('show_panel', {'panel': 'output.saslist'})
+    view.window().run_command('show_panel', {'panel': 'output.saslist'})
     Pref.objSAS.Close()
 
   def check_log(self, view):
