@@ -10,10 +10,32 @@ repository:
     patterns:
       - match: ([\+\-\*\^\/])
         name: keyword.operator.arithmetic.language_of_sas
-      - match: \b(?i:(eq|ne|gt|lt|ge|le|in|not|&|and|or|min|max))[\b]
+      - match: \b(?i:(eq|ne|gt|lt|ge|le|in|not|&|and|or|min|max))\b
         name: keyword.operator.comparison.language_of_sas
-      - match: (=|^=|¬=|~=|>|<|>=|<=|[<>]{0,1}=:|\||!|¦|¬|^|~|<>|><|\|\|)
+      - match: ([¬<>^~]?=(:)?|>|<|\||!|¦|¬|^|~|<>|><|\|\|)
         name: keyword.operator.language_of_sas
+  varline:
+    begin: (?i:(var))
+    beginCaptures:
+      '1': {name: entity.name.class.language_of_sas}
+    end: (;)
+    endCaptures:
+      '1': {name: entity.name.class.language_of_sas}
+    name: meta.language_of_sas
+    patterns:
+      - include: '#blockcomment'
+  idline:
+    begin: ([iI][dD])
+    beginCaptures:
+      '1': {name: entity.name.class.language_of_sas}
+    end: (;)
+    endCaptures:
+      '1': {name: entity.name.class.language_of_sas}
+    name: meta.language_of_sas
+    patterns:
+      - include: '#blockcomment'
+      - match: (?i:(descending|ascending|notsorted))
+        name: entity.name.function.language_of_sas
   byline:
     begin: ([bB][yY])
     beginCaptures:
@@ -24,7 +46,7 @@ repository:
     name: meta.language_of_sas
     patterns:
       - include: '#blockcomment'
-      - match: (?i:(descending|notsorted))
+      - match: (?i:(descending|ascending|notsorted))
         name: entity.name.function.language_of_sas
   fileref:
     match: (?i:(_all_))|([_a-zA-Z][_a-zA-Z0-9]{0,7})
@@ -68,6 +90,7 @@ repository:
     name: meta.language_of_sas
     patterns:
       - include: '#blockcomment'
+      - include: '#quote'
       - include: '#operator'
       - include: '#constant'
   title:
@@ -104,10 +127,10 @@ patterns:
 - comment: PROC FREQ Statement
   begin: (?i:(proc))\s+(?=(?i:freq))
   beginCaptures:
-    '1': {name: entity.name.class.language_of_sas}
+    '1': {name: storage.class.language_of_sas}
   end: (?i:((run|quit)\s*;))
   endCaptures:
-    '1': {name: entity.name.class.language_of_sas}
+    '1': {name: storage.class.language_of_sas}
   name: meta.language_of_sas
   patterns:
     - include: '#comment'
@@ -116,10 +139,10 @@ patterns:
     - include: '#byline'
     - begin: (?i:(freq))\s*
       beginCaptures:
-        '1': {name: entity.name.class.language_of_sas}
+        '1': {name: storage.class.language_of_sas}
       end: (;)
       endCaptures:
-        '1': {name: entity.name.class.language_of_sas}
+        '1': {name: storage.class.language_of_sas}
       name: meta.language_of_sas
       patterns:
         - include: '#blockcomment'
@@ -197,3 +220,316 @@ patterns:
         - include: '#blockcomment'
         - match: (\/\s*(?i:(zeros)))
           name: entity.name.function.language_of_sas
+- comment: PROC SORT Statement
+  begin: (?i:(proc))\s+(?=(?i:sort))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - include: '#where'
+    - include: '#byline'
+    - begin: (?i:(sort))\s*
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#blockcomment'
+        - match: (?i:(ascii|datecopy|force|overwrite|presorted|reverse|tagsort|nodupkey|nouniquekey|nothreads|threads|danish|ebcdic|finnish|national|norwegian|polish|swedish|equals|noequals))
+          name: entity.name.function.language_of_sas
+        - match: (?i:(data|sortsize|dupout|out|uniqueout))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+- comment: PROC APPEND Statement
+  begin: (?i:(proc))\s+(?=(?i:append))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - include: '#where'
+    - begin: (?i:(append))\s*
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#blockcomment'
+        - match: (?i:(base|data|encryptkey))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(force|getsort|nowarn))
+          name: entity.name.function.language_of_sas
+        - match: (\b(?i:((appendver)(\s*=\s*)(v6)))\b)
+          name: meta.language_of_sas
+          captures:
+            '3': {name: entity.name.function.language_of_sas}
+            '4': {name: keyword.operator.language_of_sas}
+            '5': {name: markup.raw}
+- comment: PROC CONTENTS Statement
+  begin: (?i:(proc))\s+(?=(?i:contents))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - include: '#where'
+    - begin: (?i:(contents))\s*
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#blockcomment'
+        - match: (?i:(data|encryptkey|memtype|order|out(2)?))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(centiles|details|nodetails|directory|fmtlen|nods|noprint|short|varnum))
+          name: entity.name.function.language_of_sas
+- comment: PROC COMPARE Statement
+  begin: (?i:(proc))\s+(?=(?i:compare))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - include: '#where'
+    - include: '#byline'
+    - include: '#idline'
+    - include: '#varline'
+    - begin: (?i:(compare))\s*
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#blockcomment'
+        - match: (?i:(fuzz|maxprint|out|outstats|criterion|method|base|compare|data|comp|c))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(allobs|allstats|allvars|briefsummary|brief|nodate|noprint|nosummary|novalues|printall|stats|transpose|listall|listbase|listbaseobs|listbasevar|listcomp|listcompobs|listcompvar|listequalvar|listobs|listvar|outall|outbase|outcomp|outdif|outnoequal|outpercent|warning|error|nomissbase|nomisscomp|nomissing|note))
+          name: entity.name.function.language_of_sas
+    - begin: (?i:(with))\b
+      beginCaptures:
+        '1': {name: entity.name.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: entity.name.class.language_of_sas}
+      name: meta.language_of_sas
+- comment: PROC HTTP Statement
+  begin: (?i:(proc))\s+(?=(?i:http))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - begin: (?i:(http))
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#quote'
+        - include: '#constant'
+        - include: '#blockcomment'
+        - match: (?i:(ct|headerin|headerout|in|method|out|proxyhost|proxypassword|proxyport|proxyusername|url|webauthdomain|webpassword|webusername))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(http_tokenauth))
+          name: entity.name.function.language_of_sas
+- comment: PROC SOAP Statement
+  begin: (?i:(proc))\s+(?=(?i:soap))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - begin: (?i:(soap))
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#quote'
+        - include: '#constant'
+        - include: '#blockcomment'
+        - match: (?i:(configfile|debug|envfil|enviornment|munderstand|out|proxy(domain|host|password|port|username)|soapaction|srsurl|web(authdomain|domain|password|username)|wss(authdomain|password|username)|in|service|url))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(envelope))
+          name: entity.name.function.language_of_sas
+- comment: PROC PRINTTO Statement
+  begin: (?i:(proc))\s+(?=(?i:printto))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - begin: (?i:(printto))
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#quote'
+        - include: '#constant'
+        - include: '#blockcomment'
+        - match: (?i:(label|log|print|unit))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(new))
+          name: entity.name.function.language_of_sas
+- comment: PROC PRINT Statement
+  begin: (?i:(proc))\s+(?=(?i:print))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - include: '#byline'
+    - include: '#idline'
+    - begin: (?i:(print))
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#quote'
+        - include: '#constant'
+        - include: '#blockcomment'
+        - match: (?i:(contents|data|grandtotal_label|heading|split|sumlabel|blankline|n|obs|rows|width))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(label|sumlabel|nosumlabel|double|noobs|round|uniform))
+          name: entity.name.function.language_of_sas
+    - begin: (?i:(pageby|sumby|sum))
+      beginCaptures:
+        '1': {name: entity.name.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: entity.name.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#blockcomment'
+- comment: PROC STANDARD Statement
+  begin: (?i:(proc))\s+(?=(?i:standard))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - include: '#byline'
+    - include: '#varline'
+    - begin: (?i:(standard))\s*
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#quote'
+        - include: '#constant'
+        - include: '#blockcomment'
+        - match: (?i:(data|mean|out|std|vardef))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
+        - match: (?i:(exclnpwgt(s)?|replace|noprint|print|preserverawbyvalues))
+          name: entity.name.function.language_of_sas
+    - begin: (?i:(freq|weight))
+      beginCaptures:
+        '1': {name: entity.name.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: entity.name.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#blockcomment'
+- comment: PROC PWENCODE Statement
+  begin: (?i:(proc))\s+(?=(?i:pwencode))
+  beginCaptures:
+    '1': {name: storage.class.language_of_sas}
+  end: (?i:((run|quit)\s*;))
+  endCaptures:
+    '1': {name: storage.class.language_of_sas}
+  name: meta.language_of_sas
+  patterns:
+    - include: '#comment'
+    - begin: (?i:(pwencode))
+      beginCaptures:
+        '1': {name: storage.class.language_of_sas}
+      end: (;)
+      endCaptures:
+        '1': {name: storage.class.language_of_sas}
+      name: meta.language_of_sas
+      patterns:
+        - include: '#quote'
+        - include: '#constant'
+        - include: '#blockcomment'
+        - match: (?i:(in|out|method))(\s*=\s*)
+          captures:
+            '1': {name: entity.name.function.language_of_sas}
+            '2': {name: keyword.operator.language_of_sas}
+          name: meta.language_of_sas
